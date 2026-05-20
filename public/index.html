@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grocery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- HOME ─────────────────────────────────────────────────────── -->
+  <div id="view-home" class="view active">
+    <header class="home-header">
+      <h1 class="app-title">Grocery</h1>
+      <nav class="account-nav">
+        <button class="account-btn" onclick="openAccount('seth')">Seth</button>
+        <button class="account-btn" onclick="openAccount('lucy')">Lucy</button>
+      </nav>
+    </header>
+    <main>
+      <div id="home-list"></div>
+    </main>
+  </div>
+
+  <!-- ACCOUNT ──────────────────────────────────────────────────── -->
+  <div id="view-account" class="view">
+    <header class="page-header">
+      <button class="back-btn" onclick="showHome()">Back</button>
+      <h1 id="account-title">Seth</h1>
+    </header>
+    <main class="account-main">
+      <button class="update-btn" onclick="openReview(currentUser)">Update My Stock</button>
+      <div id="item-list" class="item-list"></div>
+      <div class="add-item-form">
+        <input
+          type="text"
+          id="new-item-input"
+          placeholder="Add item"
+          maxlength="60"
+          autocomplete="off"
+        >
+        <button class="add-btn" onclick="addItem()">Add</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- REVIEW ───────────────────────────────────────────────────── -->
+  <div id="view-review" class="view">
+    <header class="page-header">
+      <button class="back-btn" onclick="exitReview()">Back</button>
+      <h1 id="review-title">Update Stock</h1>
+      <span id="review-progress" class="progress-text">1 / 12</span>
+    </header>
+    <main class="review-main">
+      <div class="review-card">
+        <span id="review-item-user" class="review-owner"></span>
+        <div id="review-item-name" class="review-item-name">Milk</div>
+        <div id="review-item-stock" class="review-current-stock stock-low">Low</div>
+        <div class="stock-buttons">
+          <button class="stock-btn" data-stock="out"     onclick="setReviewStock('out')">Out</button>
+          <button class="stock-btn" data-stock="low"     onclick="setReviewStock('low')">Low</button>
+          <button class="stock-btn" data-stock="good"    onclick="setReviewStock('good')">Good</button>
+          <button class="stock-btn" data-stock="stocked" onclick="setReviewStock('stocked')">Stocked</button>
+        </div>
+      </div>
+      <div class="review-nav">
+        <button class="nav-btn" id="prev-btn" onclick="reviewNav(-1)">Prev</button>
+        <button class="nav-btn" id="next-btn" onclick="reviewNav(1)">Next</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

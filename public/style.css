@@ -1,0 +1,380 @@
+/* ── Variables ─────────────────────────────────────────────────── */
+:root {
+  --bg:      #f5f1ea;
+  --card:    #ffffff;
+  --border:  #e4ddd2;
+  --text:    #111111;
+  --muted:   #8a8278;
+  --hover:   #f0ece2;
+
+  --out-bg:     #fee2e2; --out-fg:     #991b1b;
+  --low-bg:     #fef9c3; --low-fg:     #854d0e;
+  --good-bg:    #dcfce7; --good-fg:    #166534;
+  --stocked-bg: #dbeafe; --stocked-fg: #1e40af;
+}
+
+/* ── Reset ─────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
+  font-size: 16px;
+}
+
+/* ── Views ─────────────────────────────────────────────────────── */
+.view        { display: none; flex-direction: column; min-height: 100vh; }
+.view.active { display: flex; }
+
+/* ── Badges (colored pill) ─────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.badge-out     { background: var(--out-bg);     color: var(--out-fg); }
+.badge-low     { background: var(--low-bg);     color: var(--low-fg); }
+.badge-good    { background: var(--good-bg);    color: var(--good-fg); }
+.badge-stocked { background: var(--stocked-bg); color: var(--stocked-fg); }
+
+/* stock text-only color (used in review card) */
+.stock-out     { color: var(--out-fg); }
+.stock-low     { color: var(--low-fg); }
+.stock-good    { color: var(--good-fg); }
+.stock-stocked { color: var(--stocked-fg); }
+
+/* ── HOME header ───────────────────────────────────────────────── */
+.home-header {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+
+.app-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+  font-style: italic;
+  text-align: center;
+  padding: 28px 20px 22px;
+  color: var(--text);
+}
+
+.account-nav {
+  display: flex;
+  border-top: 1px solid var(--border);
+}
+
+.account-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 22px 0;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.account-btn + .account-btn { border-left: 1px solid var(--border); }
+.account-btn:hover  { background: var(--hover); }
+.account-btn:active { background: var(--hover); }
+
+/* ── HOME list ─────────────────────────────────────────────────── */
+.home-list {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.home-section-label {
+  padding: 20px 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.home-item-row {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 15px 18px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s;
+}
+.home-item-row:hover  { background: #fdfcfa; }
+.home-item-row:active { background: var(--hover); }
+
+.home-item-name {
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+/* ── PAGE header (account + review) ───────────────────────────── */
+.page-header {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.page-header h1 {
+  flex: 1;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+.back-btn:hover { color: var(--text); }
+
+.progress-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+/* ── ACCOUNT view ──────────────────────────────────────────────── */
+.account-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 16px;
+  gap: 12px;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.update-btn {
+  width: 100%;
+  padding: 15px 20px;
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid var(--text);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.update-btn:hover  { background: var(--text); color: var(--card); }
+.update-btn:active { background: var(--text); color: var(--card); opacity: 0.85; }
+
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.item-row {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  padding: 15px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.item-name {
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  flex-shrink: 0;
+  margin-left: auto;
+  transition: color 0.15s;
+  line-height: 1;
+}
+.delete-btn:hover { color: var(--text); }
+
+.empty-state {
+  padding: 48px 20px;
+  text-align: center;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+/* ── Add item form ─────────────────────────────────────────────── */
+.add-item-form {
+  display: flex;
+  gap: 10px;
+  position: sticky;
+  bottom: 16px;
+}
+
+.add-item-form input {
+  flex: 1;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 14px 16px;
+  outline: none;
+  transition: border-color 0.15s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.add-item-form input:focus { border-color: var(--text); }
+.add-item-form input::placeholder { color: var(--muted); }
+
+.add-btn {
+  background: var(--text);
+  color: var(--card);
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 14px 24px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+.add-btn:hover  { opacity: 0.85; }
+.add-btn:active { opacity: 0.75; }
+
+/* ── REVIEW view ───────────────────────────────────────────────── */
+.review-main {
+  padding: 28px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  flex: 1;
+  max-width: 560px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.review-card {
+  width: 100%;
+  padding: 44px 28px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.review-owner {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  min-height: 1em;
+}
+
+.review-item-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.8rem;
+  font-weight: 400;
+  font-style: italic;
+  text-align: center;
+  line-height: 1.15;
+}
+
+.review-current-stock {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.stock-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.stock-btn {
+  padding: 20px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.stock-btn:hover:not(.active) { border-color: #b0a898; }
+
+.stock-btn.active[data-stock="out"]     { border-color: var(--out-fg);     background: var(--out-bg);     color: var(--out-fg); }
+.stock-btn.active[data-stock="low"]     { border-color: var(--low-fg);     background: var(--low-bg);     color: var(--low-fg); }
+.stock-btn.active[data-stock="good"]    { border-color: var(--good-fg);    background: var(--good-bg);    color: var(--good-fg); }
+.stock-btn.active[data-stock="stocked"] { border-color: var(--stocked-fg); background: var(--stocked-bg); color: var(--stocked-fg); }
+
+/* ── Review nav ────────────────────────────────────────────────── */
+.review-nav {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.nav-btn {
+  flex: 1;
+  padding: 15px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.nav-btn:hover:not(:disabled) { border-color: var(--text); color: var(--text); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
