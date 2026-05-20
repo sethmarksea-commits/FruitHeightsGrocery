@@ -175,6 +175,11 @@ app.patch('/api/items/:id/stock', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// ── SPA fallback — serves index.html for any non-API path ────────
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // ── Start ─────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 initStorage()
