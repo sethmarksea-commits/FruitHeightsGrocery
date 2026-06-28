@@ -19,9 +19,6 @@
         <button class="account-btn" onclick="openAccount('seth')">Seth</button>
         <button class="account-btn" onclick="openAccount('lucy')">Lucy</button>
       </nav>
-      <div class="home-trends-row">
-        <button class="trends-link-btn" onclick="openTrends()">Trends &amp; Insights</button>
-      </div>
     </header>
     <main>
       <div id="home-list"></div>
@@ -73,22 +70,6 @@
         <button class="nav-btn" id="prev-btn" onclick="reviewNav(-1)">Prev</button>
         <button class="nav-btn" id="next-btn" onclick="reviewNav(1)">Next</button>
       </div>
-    </main>
-  </div>
-
-  <!-- TRENDS ──────────────────────────────────────────────────── -->
-  <div id="view-trends" class="view">
-    <header class="page-header">
-      <button class="back-btn" onclick="showHome()">Back</button>
-      <h1>Trends</h1>
-    </header>
-    <div class="trends-toggle">
-      <button class="toggle-btn active" id="ttog-seth" onclick="switchTrendsUser('seth')">Seth</button>
-      <button class="toggle-btn" id="ttog-lucy" onclick="switchTrendsUser('lucy')">Lucy</button>
-      <button class="toggle-btn" id="ttog-all"  onclick="switchTrendsUser('all')">Everyone</button>
-    </div>
-    <main>
-      <div id="trends-content" class="trends-content"></div>
     </main>
   </div>
 

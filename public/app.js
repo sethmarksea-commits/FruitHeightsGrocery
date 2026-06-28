@@ -4,7 +4,6 @@ let reviewUser   = null;
 let reviewItems  = [];
 let reviewIndex  = 0;
 let accountItems = [];
-let accountHints = {};
 let homeItemsMap = new Map(); // id → item (for fast home-list updates)
 
 // ── Stock labels & cycle ────────────────────────────────────────────
@@ -89,12 +88,8 @@ async function openAccount(user) {
 }
 
 async function loadAccountItems() {
-  const [itemsRes, hintsRes] = await Promise.all([
-    fetch(`/api/items/${currentUser}`),
-    fetch(`/api/hints/${currentUser}`),
-  ]);
-  accountItems = await itemsRes.json();
-  accountHints = hintsRes.ok ? await hintsRes.json() : {};
+  const res = await fetch(`/api/items/${currentUser}`);
+  accountItems = await res.json();
   renderItemList();
 }
 
@@ -104,19 +99,13 @@ function renderItemList() {
     list.innerHTML = '<div class="empty-state">No items yet.</div>';
     return;
   }
-  list.innerHTML = accountItems.map(item => {
-    const hint = accountHints[item.id] || '';
-    return `
-      <div class="item-row">
-        <div class="item-info">
-          <span class="item-name">${esc(item.name)}</span>
-          ${hint ? `<span class="item-hint">${esc(hint)}</span>` : ''}
-        </div>
-        <span class="badge badge-${item.stock}">${STOCK_LABELS[item.stock]}</span>
-        <button class="delete-btn" onclick="deleteItem(${item.id})">&#x2715;</button>
-      </div>
-    `;
-  }).join('');
+  list.innerHTML = accountItems.map(item => `
+    <div class="item-row">
+      <span class="item-name">${esc(item.name)}</span>
+      <span class="badge badge-${item.stock}">${STOCK_LABELS[item.stock]}</span>
+      <button class="delete-btn" onclick="deleteItem(${item.id})">&#x2715;</button>
+    </div>
+  `).join('');
 }
 
 async function addItem() {
@@ -259,109 +248,6 @@ function esc(str) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
-}
-
-// ── TRENDS view ───────────────────────────────────────────────────────
-let trendsUser = 'seth';
-
-async function openTrends() {
-  trendsUser = 'seth';
-  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('ttog-seth').classList.add('active');
-  showView('view-trends');
-  await loadTrends();
-}
-
-async function switchTrendsUser(user) {
-  trendsUser = user;
-  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(`ttog-${user}`).classList.add('active');
-  await loadTrends();
-}
-
-async function loadTrends() {
-  document.getElementById('trends-content').innerHTML =
-    '<div class="empty-state">Loading…</div>';
-  try {
-    const res  = await fetch(`/api/trends/${trendsUser}`);
-    const data = await res.json();
-    renderTrends(data);
-  } catch {
-    document.getElementById('trends-content').innerHTML =
-      '<div class="empty-state">Could not load trends.</div>';
-  }
-}
-
-function fmtDays(d) {
-  if (d == null) return '—';
-  if (d < 0.5) return 'Today';
-  const r = Math.round(d);
-  return `${r} day${r === 1 ? '' : 's'}`;
-}
-
-function renderTrends(data) {
-  const { runoutPrediction, mostDepleted, restockFrequency, suggestedSchedule } = data;
-  const showUser = trendsUser === 'all';
-
-  function userTag(u) {
-    return showUser
-      ? ` <span style="opacity:.45;font-weight:400;font-size:.8em">${cap(u)}</span>`
-      : '';
-  }
-
-  function section(label, rows) {
-    if (!rows.length) return '';
-    return `<div><div class="trends-section-label">${label}</div>${rows}</div>`;
-  }
-
-  const runoutRows = runoutPrediction.map(item => {
-    const d   = item.daysUntilOut;
-    let cls   = 'safe';
-    if (d == null)  cls = '';
-    else if (d < 2) cls = 'urgent';
-    else if (d < 5) cls = 'warning';
-    const label = d != null ? `${fmtDays(d)} left` : `~${Math.round(item.avgCycleDays)}d cycle`;
-    return `
-      <div class="trends-row">
-        <span class="trends-row-name">${esc(item.name)}${userTag(item.user)}</span>
-        <span class="trends-row-value ${cls}">${label}</span>
-      </div>`;
-  }).join('');
-
-  const depletedRows = mostDepleted.map(item => `
-    <div class="trends-row">
-      <span class="trends-row-name">${esc(item.name)}${userTag(item.user)}</span>
-      <span class="trends-row-value">${item.depleteCount}× depleted</span>
-    </div>`).join('');
-
-  const freqRows = restockFrequency.map(item => `
-    <div class="trends-row">
-      <span class="trends-row-name">${esc(item.name)}${userTag(item.user)}</span>
-      <span class="trends-row-value">~${Math.round(item.avgDays)}d cycle</span>
-    </div>`).join('');
-
-  const scheduleRows = (suggestedSchedule || []).map(item => {
-    const d = item.daysUntilOut;
-    let cls = '';
-    if (d != null && d < 2) cls = 'urgent';
-    else if (d != null && d < 5) cls = 'warning';
-    const when = d != null && d < 2
-      ? 'Restock now'
-      : `Every ~${Math.round(item.avgCycleDays)} days`;
-    return `
-      <div class="trends-row">
-        <span class="trends-row-name">${esc(item.name)}${userTag(item.user)}</span>
-        <span class="trends-row-value ${cls}">${when}</span>
-      </div>`;
-  }).join('');
-
-  const html =
-    section('Runout Prediction', runoutRows) +
-    section('Most Frequently Depleted', depletedRows) +
-    section('Restock Frequency', freqRows) +
-    section('Suggested Restock Schedule', scheduleRows);
-
-  document.getElementById('trends-content').innerHTML = html || '<div class="empty-state">No trend data yet — keep updating stock levels to see insights.</div>';
 }
 
 // ── Initial load ──────────────────────────────────────────────────────
